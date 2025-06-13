@@ -26,9 +26,9 @@ from models.Channel import Channel
 from utils.css_loader import load_css
 
 # Load centralized CSS (commented out as static folder doesn't exist)
-# project_root = Path(__file__).parent.parent
-# css_path = os.path.join(project_root, "static", "css", "material_styles.css")
-# load_css(css_path)
+project_root = Path(__file__).parent.parent
+css_path = os.path.join(project_root, "static", "css", "material_styles.css")
+load_css(css_path)
 
 # Note: Page configuration is handled in main.py to avoid conflicts
 
@@ -106,6 +106,7 @@ st.markdown("""
     div.stDownloadButton > button:hover {
         background-color: #218838;
     }
+            
 </style>
 """, unsafe_allow_html=True)
 
@@ -416,9 +417,12 @@ if st.session_state.get("processor_files"):
                         file_name=channel_filename,
                         mime="application/json",
                         use_container_width=True
-                    )
-        # Display channel information
-        st.header("Processed Channels")
+                    )        # Display channel information
+        st.markdown("""
+                            <div class="ghfm-info-card slide-in">
+                                <h4 class="ghfm-info-title">📋 Processed Channels</h4>
+                            </div>
+                        """, unsafe_allow_html=True)
         if processor.channels:
             # Create a DataFrame to display channel information
             channel_info = []
@@ -436,12 +440,18 @@ if st.session_state.get("processor_files"):
             st.dataframe(channel_df)
         else:
             st.warning("No channels were found in the processed files.")
-          # Display metadata
-        if processor.metadata:
-            st.header("Metadata")
-            st.json(processor.metadata)
-          # Data visualization section
-        st.header("📊 Data Visualization")
+          # Display metadata        if processor.metadata:
+            st.markdown("""
+                            <div class="ghfm-info-card slide-in">
+                                <h4 class="ghfm-info-title">📄 Metadata</h4>
+                            </div>
+                        """, unsafe_allow_html=True)
+            st.json(processor.metadata)          # Data visualization section
+        st.markdown("""
+                            <div class="ghfm-info-card slide-in">
+                                <h4 class="ghfm-info-title">📊 Data Visualization</h4>
+                            </div>
+                        """, unsafe_allow_html=True)
         # Load data directly from processor
         df = load_data_for_visualization(processor)
         if df is not None and isinstance(df, pd.DataFrame):# Display the first rows of the DataFrame
@@ -457,7 +467,11 @@ if st.session_state.get("processor_files"):
                     if selected_columns:
                         st.dataframe(df[selected_columns])
                         # Enhanced Chart Visualization Section
-                        st.header("📊 Advanced Chart Visualization")
+                        st.markdown("""
+                            <div class="ghfm-info-card slide-in">
+                                <h4 class="ghfm-info-title">📊 Advanced Chart Visualization </h4>
+                            </div>
+                        """, unsafe_allow_html=True)
                         # Prepare data for plotting
                         plot_columns = selected_columns.copy()
                         if 'Timestamp' not in plot_columns and 'Timestamp' in df.columns:
@@ -480,28 +494,7 @@ if st.session_state.get("processor_files"):
                             col_range = col_max - col_min
                             col_mean = col_data.mean()
                             col_std = col_data.std()
-                            # # Smart scaling detection
-                            # if abs(col_max) > 1e6 or abs(col_min) > 1e6:
-                            #     scaling_info[col] = {
-                            #         'scale_factor': 1e6,
-                            #         'scale_name': 'Million',
-                            #         'original_unit': 'Original'
-                            #     }
-                            #     st.info(f"Column '{col}' scaled by 1M for better visualization")
-                            # elif abs(col_max) > 1e3 or abs(col_min) > 1e3:
-                            #     scaling_info[col] = {
-                            #         'scale_factor': 1e3,
-                            #         'scale_name': 'Thousand',
-                            #         'original_unit': 'Original'
-                            #     }
-                            #     st.info(f"Column '{col}' scaled by 1K for better visualization")
-                            # else:
-                            #     scaling_info[col] = {
-                            #         'scale_factor': 1,
-                            #         'scale_name': '',
-                            #         'original_unit': 'Original'
-                            #     }
-                            # st.write(f"Column '{col}': Max={col_max:.3f}, Min={col_min:.3f}, Mean={col_mean:.3f}, Std Dev={col_std:.3f}, type={df[col].dtype}")
+
                             if col_max > 3000 or col_min < -200:
                                 st.info(f"Column '{col}' has extreme values and excluding it from chart for better visualization")
                                 continue
@@ -637,9 +630,12 @@ if st.session_state.get("processor_files"):
                             st.warning("Please ensure 'Timestamp' column is included and at least one data column is selected for visualization.")
                 else:
                     st.dataframe(df)
-                    try:
-                        # Simplified Data Chart for All Columns
-                        st.header("📊 Complete Dataset Visualization")
+                    try:                        # Simplified Data Chart for All Columns
+                        st.markdown("""
+                            <div class="ghfm-info-card slide-in">
+                                <h4 class="ghfm-info-title">📊 Complete Dataset Visualization</h4>
+                            </div>
+                        """, unsafe_allow_html=True)
                         if 'Timestamp' in df.columns:
                             # Filter to use only numeric columns
                             numeric_cols = df.select_dtypes(include=['float64', 'int64', 'float32', 'int32']).columns.tolist()
