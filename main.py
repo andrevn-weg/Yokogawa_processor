@@ -9,24 +9,28 @@ import os
 import json
 from datetime import datetime
 from PIL import Image
-# Import CSS loader
 from utils.css_loader import load_css
-from utils.zoom_controller import apply_default_zoom
+
+# Page configuration
+st.set_page_config(
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 # Add project root directory to PATH
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).parent
 sys.path.append(str(project_root))
 # Load centralized CSS
 css_path = os.path.join(project_root, "static", "css", "material_styles.css")
 load_css(css_path)
 
+
+
 pages = {
     "Data Processing": [
-        st.Page("pages/Process_gtd_Files.py", title='GTD File Processing', icon=":material/file_upload:"),
+        st.Page("pages/Process_gtd_Files.py", title='GTD File Processing', icon="📊"),
     ]
 }
 
-pg = st.navigation(pages,expanded=True)
-
-
+pg = st.navigation(pages, expanded=True)
 pg.run()

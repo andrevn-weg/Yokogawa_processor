@@ -30,13 +30,7 @@ from utils.css_loader import load_css
 # css_path = os.path.join(project_root, "static", "css", "material_styles.css")
 # load_css(css_path)
 
-# Page configuration
-# st.set_page_config(
-#     page_title="GTD File Processor",
-#     initial_sidebar_state="expanded",
-#     page_icon="📊",
-#     layout="wide"
-# )
+# Note: Page configuration is handled in main.py to avoid conflicts
 
 # CSS para estilização geral
 st.markdown("""
@@ -383,389 +377,336 @@ if st.button("Process Files", use_container_width=True):
                 st.error(f"Error processing files: {str(e)}")
                 st.info("Please check if the uploaded files are valid GTD files from Yokogawa equipment.")
 
-    if st.session_state.get("processor_files"):
-        processor = st.session_state["processor_files"]
-
-        # Get data from session state
-        excel_data = st.session_state.get("excel_data")
-        json_data = st.session_state.get("json_data")
-
-        # If results were generated successfully
-        if excel_data and json_data:
-            st.success(f"Files processed successfully!")
-
-            # Create download buttons
-            c1, c2, c3 = st.columns(3)
-
-            # Excel download
-            with c1:
-                st.download_button(
-                    label="📊 Export - Excel",
-                    data=excel_data[0],
-                    file_name=excel_data[1],
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
-
-            # JSON download
-            with c2:
-                st.download_button(
-                    label="📄 Export - JSON",
-                    data=json_data[0],
-                    file_name=json_data[1],
-                    mime="application/json",
-                    use_container_width=True
-                )
-
-            # Channel data download (if option is checked)
-            if save_to_database:
-                with c3:
-                    channel_data, channel_filename = generate_channel_data(processor)
-                    if channel_data:
-                        st.download_button(
-                            label="🗂️ Export - Channels",
-                            data=channel_data,
-                            file_name=channel_filename,
-                            mime="application/json",
-                            use_container_width=True
-                        )
-
-            # Display channel information
-            st.header("Processed Channels")
-            if processor.channels:
-                # Create a DataFrame to display channel information
-                channel_info = []
-                for channel_id, channel in processor.channels.items():
-                    # Ensure channel ID is converted to string to avoid type issues
-                    channel_info.append({
-                        'Channel ID': str(channel.channel_id),  # Explicitly convert to string
-                        'Unit': channel.unit,
-                        'Samples': len(channel.timestamps),
-                        'First Sample': channel.timestamps[0] if channel.timestamps else None,
-                        'Last Sample': channel.timestamps[-1] if channel.timestamps else None
-                    })
-                # Create DataFrame outside the loop to avoid recreating it on each iteration
-                channel_df = pd.DataFrame(channel_info)
-                st.dataframe(channel_df)
-            else:
-                st.warning("No channels were found in the processed files.")
-              # Display metadata
-            if processor.metadata:
-                st.header("Metadata")
-                st.json(processor.metadata)
-              # Data visualization section
-            st.header("📊 Data Visualization")
-
-            # Load data directly from processor
-            df = load_data_for_visualization(processor)
-            if df is not None and isinstance(df, pd.DataFrame):# Display the first rows of the DataFrame
-                    st.subheader("First rows of data")
-                    st.dataframe(df.head())
-                    # If there are many columns, offer a selection
-                    if len(df.columns) > 5:
-                        selected_columns = st.multiselect(
-                            "Select columns to visualize",
-                            options=df.columns.tolist(),
-                            default=df.columns.tolist()[9:17]
-                        )
-
-                        if selected_columns:
-                            st.dataframe(df[selected_columns])
-
-                            # Enhanced Chart Visualization Section
-                            st.header("📊 Advanced Chart Visualization")
-
-                            # Prepare data for plotting
-                            plot_columns = selected_columns.copy()
-                            if 'Timestamp' not in plot_columns and 'Timestamp' in df.columns:
-                                plot_columns = ['Timestamp'] + plot_columns
-
-                            # Enhanced data filtering with scaling options
-                            filtered_plot_columns = []
-                            scaling_info = {}
-
-                            for col in plot_columns:
-                                if col == 'Timestamp':
-                                    filtered_plot_columns.append(col)
-                                    continue
-                                
-                                # Check column statistics
-                                col_data = df[col].dropna()
-                                if len(col_data) == 0:
-                                    st.warning(f"Column '{col}' has no valid data, excluding from chart")
-                                    continue
-
-                                col_max = col_data.max()
-                                col_min = col_data.min()
-                                col_range = col_max - col_min
-                                col_mean = col_data.mean()
-                                col_std = col_data.std()
-
-                                # # Smart scaling detection
-                                # if abs(col_max) > 1e6 or abs(col_min) > 1e6:
-                                #     scaling_info[col] = {
-                                #         'scale_factor': 1e6,
-                                #         'scale_name': 'Million',
-                                #         'original_unit': 'Original'
-                                #     }
-                                #     st.info(f"Column '{col}' scaled by 1M for better visualization")
-                                # elif abs(col_max) > 1e3 or abs(col_min) > 1e3:
-                                #     scaling_info[col] = {
-                                #         'scale_factor': 1e3,
-                                #         'scale_name': 'Thousand',
-                                #         'original_unit': 'Original'
-                                #     }
-                                #     st.info(f"Column '{col}' scaled by 1K for better visualization")
-                                # else:
-                                #     scaling_info[col] = {
-                                #         'scale_factor': 1,
-                                #         'scale_name': '',
-                                #         'original_unit': 'Original'
-                                #     }
-                                # st.write(f"Column '{col}': Max={col_max:.3f}, Min={col_min:.3f}, Mean={col_mean:.3f}, Std Dev={col_std:.3f}, type={df[col].dtype}")
-                                if col_max > 3000 or col_min < -200:
-                                    st.info(f"Column '{col}' has extreme values and excluding it from chart for better visualization")
-                                    continue
+if st.session_state.get("processor_files"):
+    processor = st.session_state["processor_files"]
+    # Get data from session state
+    excel_data = st.session_state.get("excel_data")
+    json_data = st.session_state.get("json_data")
+    # If results were generated successfully
+    if excel_data and json_data:
+        st.success(f"Files processed successfully!")
+        # Create download buttons
+        c1, c2, c3 = st.columns(3)
+        # Excel download
+        with c1:
+            st.download_button(
+                label="📊 Export - Excel",
+                data=excel_data[0],
+                file_name=excel_data[1],
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+        # JSON download
+        with c2:
+            st.download_button(
+                label="📄 Export - JSON",
+                data=json_data[0],
+                file_name=json_data[1],
+                mime="application/json",
+                use_container_width=True
+            )
+        # Channel data download (if option is checked)
+        if save_to_database:
+            with c3:
+                channel_data, channel_filename = generate_channel_data(processor)
+                if channel_data:
+                    st.download_button(
+                        label="🗂️ Export - Channels",
+                        data=channel_data,
+                        file_name=channel_filename,
+                        mime="application/json",
+                        use_container_width=True
+                    )
+        # Display channel information
+        st.header("Processed Channels")
+        if processor.channels:
+            # Create a DataFrame to display channel information
+            channel_info = []
+            for channel_id, channel in processor.channels.items():
+                # Ensure channel ID is converted to string to avoid type issues
+                channel_info.append({
+                    'Channel ID': str(channel.channel_id),  # Explicitly convert to string
+                    'Unit': channel.unit,
+                    'Samples': len(channel.timestamps),
+                    'First Sample': channel.timestamps[0] if channel.timestamps else None,
+                    'Last Sample': channel.timestamps[-1] if channel.timestamps else None
+                })
+            # Create DataFrame outside the loop to avoid recreating it on each iteration
+            channel_df = pd.DataFrame(channel_info)
+            st.dataframe(channel_df)
+        else:
+            st.warning("No channels were found in the processed files.")
+          # Display metadata
+        if processor.metadata:
+            st.header("Metadata")
+            st.json(processor.metadata)
+          # Data visualization section
+        st.header("📊 Data Visualization")
+        # Load data directly from processor
+        df = load_data_for_visualization(processor)
+        if df is not None and isinstance(df, pd.DataFrame):# Display the first rows of the DataFrame
+                st.subheader("First rows of data")
+                st.dataframe(df.head())
+                # If there are many columns, offer a selection
+                if len(df.columns) > 5:
+                    selected_columns = st.multiselect(
+                        "Select columns to visualize",
+                        options=df.columns.tolist(),
+                        default=df.columns.tolist()[9:17]
+                    )
+                    if selected_columns:
+                        st.dataframe(df[selected_columns])
+                        # Enhanced Chart Visualization Section
+                        st.header("📊 Advanced Chart Visualization")
+                        # Prepare data for plotting
+                        plot_columns = selected_columns.copy()
+                        if 'Timestamp' not in plot_columns and 'Timestamp' in df.columns:
+                            plot_columns = ['Timestamp'] + plot_columns
+                        # Enhanced data filtering with scaling options
+                        filtered_plot_columns = []
+                        scaling_info = {}
+                        for col in plot_columns:
+                            if col == 'Timestamp':
                                 filtered_plot_columns.append(col)
-
-                            plot_columns = filtered_plot_columns
-
-                            if 'Timestamp' in plot_columns and len(plot_columns) > 1:
-                                # Create the plot DataFrame with scaling
-                                plot_df = df[plot_columns].copy()
-
-                                # # Apply scaling
-                                # for col in plot_columns:
-                                #     if col != 'Timestamp' and col in scaling_info:
-                                #         plot_df[col] = plot_df[col] / scaling_info[col]['scale_factor']                            # Chart customization options
+                                continue
+                            
+                            # Check column statistics
+                            col_data = df[col].dropna()
+                            if len(col_data) == 0:
+                                st.warning(f"Column '{col}' has no valid data, excluding from chart")
+                                continue
+                            col_max = col_data.max()
+                            col_min = col_data.min()
+                            col_range = col_max - col_min
+                            col_mean = col_data.mean()
+                            col_std = col_data.std()
+                            # # Smart scaling detection
+                            # if abs(col_max) > 1e6 or abs(col_min) > 1e6:
+                            #     scaling_info[col] = {
+                            #         'scale_factor': 1e6,
+                            #         'scale_name': 'Million',
+                            #         'original_unit': 'Original'
+                            #     }
+                            #     st.info(f"Column '{col}' scaled by 1M for better visualization")
+                            # elif abs(col_max) > 1e3 or abs(col_min) > 1e3:
+                            #     scaling_info[col] = {
+                            #         'scale_factor': 1e3,
+                            #         'scale_name': 'Thousand',
+                            #         'original_unit': 'Original'
+                            #     }
+                            #     st.info(f"Column '{col}' scaled by 1K for better visualization")
+                            # else:
+                            #     scaling_info[col] = {
+                            #         'scale_factor': 1,
+                            #         'scale_name': '',
+                            #         'original_unit': 'Original'
+                            #     }
+                            # st.write(f"Column '{col}': Max={col_max:.3f}, Min={col_min:.3f}, Mean={col_mean:.3f}, Std Dev={col_std:.3f}, type={df[col].dtype}")
+                            if col_max > 3000 or col_min < -200:
+                                st.info(f"Column '{col}' has extreme values and excluding it from chart for better visualization")
+                                continue
+                            filtered_plot_columns.append(col)
+                        plot_columns = filtered_plot_columns
+                        if 'Timestamp' in plot_columns and len(plot_columns) > 1:
+                            # Create the plot DataFrame with scaling
+                            plot_df = df[plot_columns].copy()
+                            # # Apply scaling
+                            # for col in plot_columns:
+                            #     if col != 'Timestamp' and col in scaling_info:
+                            #         plot_df[col] = plot_df[col] / scaling_info[col]['scale_factor']                            # Chart customization options
+                            with st.expander("🎛️ Chart Options", expanded=True):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    chart_type = st.segmented_control(
+                                        "Chart Type",
+                                        ["Line Chart", "Scatter Plot"],
+                                        default="Line Chart"
+                                    )
+                                with col2:
+                                    # Data sampling options
+                                    df_len = len(df)
+                                    max_points = df_len
+                                # Set default values for removed options
+                                resample_method = "Every Nth Point"
+                                chart_height = 600
+                                color_scheme = "Default"
+                                show_grid = True
+                                show_statistics = False
+                            # Apply data sampling if needed
+                            if max_points < len(plot_df):
+                                n_rows = len(plot_df)
+                                if resample_method == "Every Nth Point":
+                                    sample_every = max(1, n_rows // max_points)
+                                    plot_df_sampled = plot_df.iloc[::sample_every].copy()
+                                else:
+                                    sample_every = max(1, n_rows // max_points)
+                                    if resample_method == "Average":
+                                        plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).mean().reset_index(drop=True)
+                                    elif resample_method == "Minimum":
+                                        plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).min().reset_index(drop=True)
+                                    else:  # Maximum
+                                        plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).max().reset_index(drop=True)
+                                    # Restore Timestamp column for grouped data
+                                    if 'Timestamp' in plot_df.columns:
+                                        timestamps_grouped = df['Timestamp'].groupby(df.index // sample_every)
+                                        if resample_method == "Average":
+                                            plot_df_sampled['Timestamp'] = timestamps_grouped.first().values
+                                        elif resample_method == "Minimum":
+                                            plot_df_sampled['Timestamp'] = timestamps_grouped.first().values
+                                        else:
+                                            plot_df_sampled['Timestamp'] = timestamps_grouped.last().values
+                            else:
+                                plot_df_sampled = plot_df.copy()
+                            # Create the interactive chart using Plotly
+                            try:
+                                # Define color palette
+                                color_palettes = {
+                                    "Default": px.colors.qualitative.Plotly,
+                                    "Viridis": px.colors.sequential.Viridis,
+                                    "Plasma": px.colors.sequential.Plasma,
+                                    "Set3": px.colors.qualitative.Set3,
+                                    "Dark24": px.colors.qualitative.Dark24
+                                }
+                                colors = color_palettes.get(color_scheme, px.colors.qualitative.Plotly)
+                                # Create the main chart
+                                fig = go.Figure()
+                                data_columns = [col for col in plot_columns if col != 'Timestamp']
+                                for i, col in enumerate(data_columns):
+                                    color = colors[i % len(colors)]
+                                      # Prepare hover text with scaling info
+                                    hover_text = f"<b>{col}</b><br>"
+                                    if col in scaling_info and scaling_info[col]['scale_factor'] != 1:
+                                        hover_text += f"Scaled Value: %{{y:.3f}} ({scaling_info[col]['scale_name']})<br>"
+                                        hover_text += f"Original Value: %{{customdata:.3f}}<br>"
+                                        customdata = plot_df_sampled[col] * scaling_info[col]['scale_factor']
+                                    else:
+                                        hover_text += f"Value: %{{y:.3f}}<br>"
+                                        customdata = None
+                                    hover_text += f"Time: %{{x}}<br>"
+                                    if chart_type == "Line Chart":
+                                        fig.add_trace(go.Scatter(
+                                            x=plot_df_sampled['Timestamp'],
+                                            y=plot_df_sampled[col],
+                                            mode='lines',
+                                            name=col,
+                                            line=dict(color=color, width=2),
+                                            customdata=customdata,
+                                            hovertemplate=hover_text + "<extra></extra>"
+                                        ))
+                                    elif chart_type == "Scatter Plot":
+                                        fig.add_trace(go.Scatter(
+                                            x=plot_df_sampled['Timestamp'],
+                                            y=plot_df_sampled[col],
+                                            mode='markers',
+                                            name=col,
+                                            marker=dict(color=color, size=4, opacity=0.7),
+                                            customdata=customdata,
+                                            hovertemplate=hover_text + "<extra></extra>" ))
+                                  # Update layout
+                                fig.update_layout(
+                                    title="GTD Data Visualization",
+                                    xaxis_title="Timestamp",
+                                    yaxis_title="Values",
+                                    height=chart_height,
+                                    showlegend=True
+                                )
+                                # Display the chart
+                                st.plotly_chart(fig, use_container_width=True)
+                                # Export options
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    if st.button("📥 Export Chart as HTML",use_container_width=True):
+                                        html_str = fig.to_html(include_plotlyjs='cdn')
+                                        st.download_button(
+                                            label="Download HTML",
+                                            data=html_str,
+                                            file_name=f"gtd_chart_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                                            mime="text/html",
+                                            use_container_width=True
+                                        )
+                            except Exception as e:
+                                st.error(f"Error creating interactive chart: {str(e)}")
+                                st.info("Falling back to Streamlit line chart...")
+                                  # Fallback to Streamlit chart
+                                try:
+                                    chart_data = plot_df_sampled.set_index('Timestamp')
+                                    st.line_chart(chart_data, height=chart_height)
+                                except Exception as fallback_error:
+                                    st.error(f"Chart creation failed: {str(fallback_error)}")
+                        else:
+                            st.warning("Please ensure 'Timestamp' column is included and at least one data column is selected for visualization.")
+                else:
+                    st.dataframe(df)
+                    try:
+                        # Simplified Data Chart for All Columns
+                        st.header("📊 Complete Dataset Visualization")
+                        if 'Timestamp' in df.columns:
+                            # Filter to use only numeric columns
+                            numeric_cols = df.select_dtypes(include=['float64', 'int64', 'float32', 'int32']).columns.tolist()
+                            if 'Timestamp' in numeric_cols:
+                                numeric_cols.remove('Timestamp')
+                            if numeric_cols:
+                                # Simple chart options
                                 with st.expander("🎛️ Chart Options", expanded=True):
                                     col1, col2 = st.columns(2)
-
                                     with col1:
-                                        chart_type = st.segmented_control(
+                                        all_chart_type = st.selectbox(
                                             "Chart Type",
                                             ["Line Chart", "Scatter Plot"],
-                                            default="Line Chart"
+                                            index=0
                                         )
-
                                     with col2:
-                                        # Data sampling options
-                                        df_len = len(df)
-                                        max_points = df_len
-
-
-                                    # Set default values for removed options
-                                    resample_method = "Every Nth Point"
-                                    chart_height = 600
-                                    color_scheme = "Default"
-                                    show_grid = True
-                                    show_statistics = False
-
-                                # Apply data sampling if needed
-                                if max_points < len(plot_df):
-                                    n_rows = len(plot_df)
-
-                                    if resample_method == "Every Nth Point":
-                                        sample_every = max(1, n_rows // max_points)
-                                        plot_df_sampled = plot_df.iloc[::sample_every].copy()
-                                    else:
-                                        sample_every = max(1, n_rows // max_points)
-
-                                        if resample_method == "Average":
-                                            plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).mean().reset_index(drop=True)
-                                        elif resample_method == "Minimum":
-                                            plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).min().reset_index(drop=True)
-                                        else:  # Maximum
-                                            plot_df_sampled = plot_df.groupby(plot_df.index // sample_every).max().reset_index(drop=True)
-
-                                        # Restore Timestamp column for grouped data
-                                        if 'Timestamp' in plot_df.columns:
-                                            timestamps_grouped = df['Timestamp'].groupby(df.index // sample_every)
-                                            if resample_method == "Average":
-                                                plot_df_sampled['Timestamp'] = timestamps_grouped.first().values
-                                            elif resample_method == "Minimum":
-                                                plot_df_sampled['Timestamp'] = timestamps_grouped.first().values
-                                            else:
-                                                plot_df_sampled['Timestamp'] = timestamps_grouped.last().values
-                                else:
-                                    plot_df_sampled = plot_df.copy()
-
-                                # Create the interactive chart using Plotly
+                                        # Simplified column selection
+                                        num_cols_len = len(numeric_cols)
+                                        max_cols_display = num_cols_len
+                                # Select columns to display
+                                display_cols = numeric_cols[:max_cols_display]
+                                # Create simple chart
                                 try:
-                                    # Define color palette
-                                    color_palettes = {
-                                        "Default": px.colors.qualitative.Plotly,
-                                        "Viridis": px.colors.sequential.Viridis,
-                                        "Plasma": px.colors.sequential.Plasma,
-                                        "Set3": px.colors.qualitative.Set3,
-                                        "Dark24": px.colors.qualitative.Dark24
-                                    }
-
-                                    colors = color_palettes.get(color_scheme, px.colors.qualitative.Plotly)
-
-                                    # Create the main chart
-                                    fig = go.Figure()
-
-                                    data_columns = [col for col in plot_columns if col != 'Timestamp']
-
-                                    for i, col in enumerate(data_columns):
-                                        color = colors[i % len(colors)]
-                                          # Prepare hover text with scaling info
-                                        hover_text = f"<b>{col}</b><br>"
-                                        if col in scaling_info and scaling_info[col]['scale_factor'] != 1:
-                                            hover_text += f"Scaled Value: %{{y:.3f}} ({scaling_info[col]['scale_name']})<br>"
-                                            hover_text += f"Original Value: %{{customdata:.3f}}<br>"
-                                            customdata = plot_df_sampled[col] * scaling_info[col]['scale_factor']
-                                        else:
-                                            hover_text += f"Value: %{{y:.3f}}<br>"
-                                            customdata = None
-
-                                        hover_text += f"Time: %{{x}}<br>"
-
-                                        if chart_type == "Line Chart":
-                                            fig.add_trace(go.Scatter(
-                                                x=plot_df_sampled['Timestamp'],
-                                                y=plot_df_sampled[col],
+                                    plot_data = df[['Timestamp'] + display_cols].copy()
+                                    # Create Plotly figure
+                                    fig_all = go.Figure()
+                                    colors = px.colors.qualitative.Set3
+                                    for i, col in enumerate(display_cols):
+                                        if all_chart_type == "Line Chart":
+                                            fig_all.add_trace(go.Scatter(
+                                                x=plot_data['Timestamp'],
+                                                y=plot_data[col],
                                                 mode='lines',
                                                 name=col,
-                                                line=dict(color=color, width=2),
-                                                customdata=customdata,
-                                                hovertemplate=hover_text + "<extra></extra>"
+                                                line=dict(color=colors[i % len(colors)], width=1.5),
+                                                hovertemplate=f"<b>{col}</b><br>Value: %{{y:.3f}}<br>Time: %{{x}}<br><extra></extra>"
                                             ))
-
-                                        elif chart_type == "Scatter Plot":
-                                            fig.add_trace(go.Scatter(
-                                                x=plot_df_sampled['Timestamp'],
-                                                y=plot_df_sampled[col],
+                                        else:  # Scatter Plot
+                                            fig_all.add_trace(go.Scatter(
+                                                x=plot_data['Timestamp'],
+                                                y=plot_data[col],
                                                 mode='markers',
                                                 name=col,
-                                                marker=dict(color=color, size=4, opacity=0.7),
-                                                customdata=customdata,
-                                                hovertemplate=hover_text + "<extra></extra>" ))
-                                      # Update layout
-                                    fig.update_layout(
-                                        title="GTD Data Visualization",
+                                                marker=dict(color=colors[i % len(colors)], size=3, opacity=0.7),
+                                                hovertemplate=f"<b>{col}</b><br>Value: %{{y:.3f}}<br>Time: %{{x}}<br><extra></extra>"
+                                            ))
+                                    fig_all.update_layout(
+                                        title="Complete Dataset Overview",
                                         xaxis_title="Timestamp",
                                         yaxis_title="Values",
-                                        height=chart_height,
+                                        height=600,
                                         showlegend=True
                                     )
-
-                                    # Display the chart
-                                    st.plotly_chart(fig, use_container_width=True)
-
-                                    # Export options
-                                    col1, col2 = st.columns(2)
-                                    with col1:
-                                        if st.button("📥 Export Chart as HTML",use_container_width=True):
-                                            html_str = fig.to_html(include_plotlyjs='cdn')
-                                            st.download_button(
-                                                label="Download HTML",
-                                                data=html_str,
-                                                file_name=f"gtd_chart_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
-                                                mime="text/html",
-                                                use_container_width=True
-                                            )
-
-
-
+                                    st.plotly_chart(fig_all, use_container_width=True)
                                 except Exception as e:
-                                    st.error(f"Error creating interactive chart: {str(e)}")
-                                    st.info("Falling back to Streamlit line chart...")
-                                      # Fallback to Streamlit chart
+                                    st.error(f"Error creating chart: {str(e)}")
+                                    # Fallback to streamlit chart
                                     try:
-                                        chart_data = plot_df_sampled.set_index('Timestamp')
-                                        st.line_chart(chart_data, height=chart_height)
+                                        st.line_chart(df.set_index('Timestamp')[display_cols], height=600)
                                     except Exception as fallback_error:
-                                        st.error(f"Chart creation failed: {str(fallback_error)}")
+                                        st.error(f"Fallback chart creation failed: {str(fallback_error)}")
                             else:
-                                st.warning("Please ensure 'Timestamp' column is included and at least one data column is selected for visualization.")
-                    else:
-                        st.dataframe(df)
-                        try:
-                            # Simplified Data Chart for All Columns
-                            st.header("📊 Complete Dataset Visualization")
-
-                            if 'Timestamp' in df.columns:
-                                # Filter to use only numeric columns
-                                numeric_cols = df.select_dtypes(include=['float64', 'int64', 'float32', 'int32']).columns.tolist()
-                                if 'Timestamp' in numeric_cols:
-                                    numeric_cols.remove('Timestamp')
-
-                                if numeric_cols:
-                                    # Simple chart options
-                                    with st.expander("🎛️ Chart Options", expanded=True):
-                                        col1, col2 = st.columns(2)
-                                        with col1:
-                                            all_chart_type = st.selectbox(
-                                                "Chart Type",
-                                                ["Line Chart", "Scatter Plot"],
-                                                index=0
-                                            )
-
-                                        with col2:
-                                            # Simplified column selection
-                                            num_cols_len = len(numeric_cols)
-
-                                            max_cols_display = num_cols_len
-
-
-                                    # Select columns to display
-                                    display_cols = numeric_cols[:max_cols_display]
-
-                                    # Create simple chart
-                                    try:
-                                        plot_data = df[['Timestamp'] + display_cols].copy()
-
-                                        # Create Plotly figure
-                                        fig_all = go.Figure()
-
-                                        colors = px.colors.qualitative.Set3
-
-                                        for i, col in enumerate(display_cols):
-                                            if all_chart_type == "Line Chart":
-                                                fig_all.add_trace(go.Scatter(
-                                                    x=plot_data['Timestamp'],
-                                                    y=plot_data[col],
-                                                    mode='lines',
-                                                    name=col,
-                                                    line=dict(color=colors[i % len(colors)], width=1.5),
-                                                    hovertemplate=f"<b>{col}</b><br>Value: %{{y:.3f}}<br>Time: %{{x}}<br><extra></extra>"
-                                                ))
-                                            else:  # Scatter Plot
-                                                fig_all.add_trace(go.Scatter(
-                                                    x=plot_data['Timestamp'],
-                                                    y=plot_data[col],
-                                                    mode='markers',
-                                                    name=col,
-                                                    marker=dict(color=colors[i % len(colors)], size=3, opacity=0.7),
-                                                    hovertemplate=f"<b>{col}</b><br>Value: %{{y:.3f}}<br>Time: %{{x}}<br><extra></extra>"
-                                                ))
-
-                                        fig_all.update_layout(
-                                            title="Complete Dataset Overview",
-                                            xaxis_title="Timestamp",
-                                            yaxis_title="Values",
-                                            height=600,
-                                            showlegend=True
-                                        )
-
-                                        st.plotly_chart(fig_all, use_container_width=True)
-
-                                    except Exception as e:
-                                        st.error(f"Error creating chart: {str(e)}")
-                                        # Fallback to streamlit chart
-                                        try:
-                                            st.line_chart(df.set_index('Timestamp')[display_cols], height=600)
-                                        except Exception as fallback_error:
-                                            st.error(f"Fallback chart creation failed: {str(fallback_error)}")
-
-                                else:
-                                    st.warning("No numeric columns were found to plot in the chart.")
-                            else:
-                                st.warning("'Timestamp' column not found in the data.")
-                        except:
-                            pass
+                                st.warning("No numeric columns were found to plot in the chart.")
+                        else:
+                            st.warning("'Timestamp' column not found in the data.")
+                    except:
+                        pass
 
 # Footer
 st.markdown("---")
