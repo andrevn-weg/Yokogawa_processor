@@ -1,0 +1,559 @@
+/* Main header styles */
+.main-header {
+    background: linear-gradient(135deg, #f0f2f6 0%, #e6f2ff 100%);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #d1dce7;
+}
+
+.main-header h3 {
+    color: #0066cc;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.main-header p {
+    color: #666;
+    margin-bottom: 0;
+    font-size: 1.1em;
+}
+
+/* Material page main header */
+.page-main-header {
+    background: linear-gradient(to right, #4e73df, #224abe);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    color: white;
+    text-align: center;
+}
+
+/* Info box styles */
+.info-box {
+    background-color: #e6f2ff;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #0066cc;
+    margin-bottom: 20px;
+}
+
+.info-box h4 {
+    margin: 0;
+}
+
+.info-box h5 {
+    color: #0066cc;
+    margin-top: 10px;
+}
+
+/* Section header styles */
+.section-header {
+    background-color: #e6f2ff;
+    padding: 2px;
+    border-radius: 5px;
+    border-left: 5px solid #0066cc;
+    margin-bottom: 15px;
+}
+
+/* Section header styles */
+.section-header-minor {
+    background-color: #e6f2ff;
+    padding: 2px;
+    border-radius: 5px;
+    border-left: 5px solid #0066cc;
+    margin-bottom: 5px;
+}
+.section-header-minor h4 {
+    color: #0066cc;
+}
+
+.section-header h4 {
+    color: #0066cc;
+}
+
+/* Button styling */
+.button {
+    width: 100%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+
+.button-primary {
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.button-secondary {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.button:hover {
+    opacity: 0.9;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Buttons for the form */
+.st-emotion-cache-1wu5brd{
+    width: 100%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+.st-emotion-cache-1wu5brd-primary{
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.st-emotion-cache-1wu5brd-secondary{
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+.st-emotion-cache-1wu5brd:hover{
+    opacity: 0.9;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgb(0, 87, 157);
+}
+.st-emotion-cache-1wu5brd:active{
+    opacity: 0.9;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgb(0, 87, 157);
+}
+.st-emotion-cache-1wu5brd:focus{
+    opacity: 0.9;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgb(0, 87, 157);
+}
+
+
+/* Sidebar button styling */
+.sidebar-button {
+    width: 100%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: left;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sidebar-button-primary {
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.sidebar-button-secondary {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.sidebar-button:hover {
+    opacity: 0.9;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Navigation section */
+.nav-section {
+    background-color: #f0f2f6;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.nav-section h3 {
+    color: #0066cc;
+    margin: 0;
+}
+
+/* Project info box */
+.project-info {
+    background-color: #fff3cd;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #ffc107;
+    margin-top: 10px;
+}
+
+.project-info h4 {
+    color: #856404;
+    margin: 0;
+}
+
+.project-info p {
+    margin: 5px 0 0 0;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: gray;
+    font-size: 0.8em;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Warning box */
+.warning-box {
+    background-color: #fff3cd;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #ffc107;
+    margin: 20px 0px;
+}
+
+.warning-box h4 {
+    color: #856404;
+    margin: 0;
+}
+
+.warning-box p {
+    margin: 5px 0 0 0;
+}
+
+/* Info notice */
+.info-notice {
+    background-color: #d1ecf1;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #17a2b8;
+    margin: 20px 0px;
+}
+
+.info-notice h4 {
+    color: #0c5460;
+    margin: 0;
+}
+
+.info-notice p {
+    margin: 5px 0 0 0;
+}
+
+/* Dataframe container */
+.dataframe-container {
+    border-radius: 5px;
+    border: 1px solid #e1e4e8;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Detail container */
+.detail-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #e1e4e8;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.feature-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #e1e4e8;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+/* Small dataframe */
+.small-dataframe {
+    border-radius: 5px;
+    border: 1px solid #e1e4e8;
+    padding: 5px;
+    background-color: white;
+}
+
+/* Notes section */
+.notes-section {
+    background-color: #f1f8e9;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 10px;
+    border-left: 3px solid #7cb342;
+}
+
+/* Thermal properties section */
+.thermal-section {
+    background-color: #fff4e6;
+    padding: 2px;
+    border-radius: 5px;
+    border-left: 5px solid #fd7e14;
+    margin-bottom: 15px;
+}
+
+.thermal-section h4 {
+    color: #fd7e14;
+}
+
+/* Thermal conductivity equation display */
+.thermal-conductivity-equation-display {
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-left: 3px solid #17a2b8;
+}
+
+/* Input help box */
+.input-help-box {
+    background-color: #f8f9fa;
+    padding: 2px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border-left: 5px solid #17a2b8;
+}
+
+/* Custom Streamlit button styling */
+div.stButton > button[kind="primary"] {
+    background-color: #0066cc;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border: 1px solid #0066cc;
+    padding: 10px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+div.stButton > button[kind="primary"]:hover {
+    background-color: #0052a3;
+    border-color: #004080;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+div.stButton > button[kind="secondary"] {
+    background-color: #6c757d;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border: 1px solid #6c757d;
+    padding: 10px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+div.stButton > button[kind="secondary"]:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Table styling with centered values */
+.centered-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.centered-table thead tr {
+    background-color: #4e73df;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.centered-table th,
+.centered-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #dddddd;
+    /* font-weight: bold; */
+}
+
+.centered-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.centered-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.centered-table tbody tr:last-of-type {
+    border-bottom: 2px solid #4e73df;
+}
+
+.centered-table tbody tr:hover {
+    background-color: #e6f2ff;
+    transition: background-color 0.3s ease;
+}
+
+/* Section headers for the Sensor Manager */
+.section-title {
+    background-color: #e6f7ff;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #1890ff;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.section-title h3 {
+    color: #1890ff;
+    margin: 0;
+}
+
+/* Sensor configuration info box */
+.sensor-config-info {
+    background-color: #e6f7ff;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 6px solid #1890ff;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.sensor-config-info h3 {
+    color: #1890ff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.sensor-config-info .sensor-count {
+    background-color: #1890ff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.sensor-config-info p {
+    margin: 8px 0 0 0;
+    color: #666;
+}
+
+/* Common section header style used across the app */
+.section-header {
+    background-color: #f8f9fa;
+    padding: 2px;
+    border-radius: 8px;
+    border-left: 4px solid #0066cc;
+    margin-bottom: 20px;
+}
+
+.section-header h4 {
+    color: #0066cc;
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.section-header p {
+    color: #666;
+    margin: 0;
+    font-size: 0.9em;
+}
+
+/* Test details container */
+.test-details-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+}
+.info-item {
+        margin-bottom: 8px;
+}
+.info-label {
+        font-weight: 600;
+        color: #555;
+        font-size: 0.9em;
+}
+.info-value {
+        background-color: #1e88e5;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        display: inline-block;
+        margin-top: 2px;
+}
+
+/* Hide Streamlit running man icon */
+/* .stApp > header[data-testid="stHeader"] {
+    display: none !important;
+} */
+
+/* Hide the running indicator in the status area */
+/* [data-testid="stStatusWidget"] {
+    display: none !important;
+} */
+
+/* Hide running indicator in sidebar */
+.css-1d391kg {
+    display: none !important;
+}
+
+/* Hide the "Running..." text that appears */
+.stAlert[data-baseweb="notification"] {
+    display: none !important;
+}
+
+/* Alternative selectors for running status */
+.stSpinner,
+.stStatus,
+[data-testid="stSpinner"],
+[data-testid="stStatus"] {
+    display: none !important;
+}
+
+/* Hide the running icon in the browser tab (favicon) */
+link[rel="icon"][href*="running"] {
+    display: none !important;
+}
+
+/* Hide any element with running-related classes */
+[class*="running"],
+[class*="spinner"],
+[id*="running"],
+[id*="spinner"] {
+    display: none !important;
+}
+
+/* Additional hiding for Streamlit status indicators */
+.css-1kyxreq,
+.css-1offfwp,
+.css-1inwz65 {
+    display: none !important;
+}

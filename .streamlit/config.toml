@@ -1,0 +1,25 @@
+# ~/.streamlit/config.toml
+[browser]
+#gatherUsageStats = false
+
+[theme]
+primaryColor = "#0a2d6d"
+backgroundColor = "#f0f2f6"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#000000"
+#font = "sans serif" #0d6efd
+# #0a2d6d
+
+[runner]
+fastReruns = false  # Commented to enable running man animation
+
+[client]
+#showErrorDetails = false
+#toolbarMode = "minimal"
+
+[server]
+#runOnSave = false
+#allowRunOnSave = false
+
+[ui]
+#hideTopBar = true  # Commented to show top bar
