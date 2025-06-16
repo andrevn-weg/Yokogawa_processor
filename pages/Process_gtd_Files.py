@@ -406,23 +406,23 @@ if st.session_state.get("processor_files"):
                 mime="application/json",
                 use_container_width=True
             )
-        # Channel data download (if option is checked)
-        if save_to_database:
-            with c3:
-                channel_data, channel_filename = generate_channel_data(processor)
-                if channel_data:
-                    st.download_button(
-                        label="🗂️ Export - Channels",
-                        data=channel_data,
-                        file_name=channel_filename,
-                        mime="application/json",
-                        use_container_width=True
-                    )        # Display channel information
-        st.markdown("""
-                            <div class="ghfm-info-card slide-in">
-                                <h4 class="ghfm-info-title">📋 Processed Channels</h4>
-                            </div>
-                        """, unsafe_allow_html=True)
+        # # Channel data download (if option is checked)
+        # if save_to_database:
+        #     with c3:
+        #         channel_data, channel_filename = generate_channel_data(processor)
+        #         if channel_data:
+        #             st.download_button(
+        #                 label="🗂️ Export - Channels",
+        #                 data=channel_data,
+        #                 file_name=channel_filename,
+        #                 mime="application/json",
+        #                 use_container_width=True
+        #             )        # Display channel information
+        # st.markdown("""
+        #                     <div class="ghfm-info-card slide-in">
+        #                         <h4 class="ghfm-info-title">📋 Processed Channels</h4>
+        #                     </div>
+        #                 """, unsafe_allow_html=True)
         if processor.channels:
             # Create a DataFrame to display channel information
             channel_info = []
@@ -462,7 +462,7 @@ if st.session_state.get("processor_files"):
                     selected_columns = st.multiselect(
                         "Select columns to visualize",
                         options=df.columns.tolist(),
-                        default=df.columns.tolist()[9:17]
+                        default=df.columns.tolist()[0:5]
                     )
                     if selected_columns:
                         st.dataframe(df[selected_columns])
