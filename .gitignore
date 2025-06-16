@@ -162,3 +162,4 @@ cython_debug/
 # Streamlit configuration
 .streamlit/secrets.toml
 .streamlit/config_local.toml
+/docs

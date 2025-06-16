@@ -2,6 +2,11 @@
 
 Sistema para processamento de arquivos GTD provenientes de equipamentos Yokogawa. Aplicação desenvolvida para facilitar a conversão e análise de dados de medição.
 
+## 🚀 Acesso Rápido
+
+- **Aplicação Web**: https://yokogawa-gtd.streamlit.app/
+- **Repositório**: https://github.com/andrevn/Yokogawa_processor.git
+
 ## Funcionalidades
 
 - **Processamento de arquivos GTD**: Leitura e parsing de arquivos GTD do Yokogawa
@@ -29,7 +34,10 @@ Yokogawa_processor/
 
 ## Instalação
 
-1. Clone o repositório
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/andrevn/Yokogawa_processor.git
+   ```
 2. Instale as dependências:
    ```bash
    pip install -r requirements.txt
