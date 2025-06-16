@@ -59,6 +59,7 @@ class GTDProcessor:
         ch_line_idx = None
         unit_line_idx = None
         kind_line_idx = None
+        tag_line_idx = None  # Inicializa a variável tag_line_idx
         
         # Procura as linhas de definição olhando algumas linhas antes de "Sampling Data"
         for i in range(sampling_data_line_index - 10, sampling_data_line_index):
@@ -74,17 +75,28 @@ class GTDProcessor:
                 unit_line_idx = i
             elif parts and parts[0].strip() == "Kind":
                 kind_line_idx = i
+            elif parts and parts[0].strip() == "Tag":
+                tag_line_idx = i  # Opcional, se precisar de tags
+            
         
         # Verifica se temos todas as informações necessárias
         if None in (ch_line_idx, unit_line_idx, kind_line_idx):
             print("Aviso: Não foi possível identificar todas as linhas de definição de canais.")
             print(f"Ch: {ch_line_idx}, Unit: {unit_line_idx}, Kind: {kind_line_idx}")
             return
-        
-        # Obtém as linhas específicas
+          # Obtém as linhas específicas
         ch_parts = lines[ch_line_idx].strip().split('\t')
         unit_parts = lines[unit_line_idx].strip().split('\t')
         kind_parts = lines[kind_line_idx].strip().split('\t')
+        print(f"Processando canais: Ch={ch_parts}, Unit={unit_parts}, Kind={kind_parts}")
+        
+        # Processa a linha de tag apenas se ela existir
+        tag_parts = None
+        if tag_line_idx is not None:
+            tag_parts = lines[tag_line_idx].strip().split('\t')
+            print(f"Tag: {tag_parts}")
+        else:
+            print("Tag: Não encontrada")
         
         # Mapeia canais para suas posições
         # Dicionário: {posição -> (channel_id, kind, unit)}
@@ -106,16 +118,25 @@ class GTDProcessor:
                 else:
                     # Se não for um dígito, usa a string como identificador
                     channel_id = channel_id_str
-                
-                # Obtém a unidade e o tipo (Min/Max)
+                  # Obtém a unidade e o tipo (Min/Max)
                 unit = unit_parts[i].strip() if i < len(unit_parts) else ""
                 kind = kind_parts[i].strip() if i < len(kind_parts) else ""
                 
+                # Obtém a tag se ela existir
+                tag = ""
+                if tag_parts is not None and i < len(tag_parts):
+                    tag = tag_parts[i].strip()
+                
+                # Se existe tag, adiciona ela ao ID do canal
+                if tag:
+                    print(f"Canal {channel_id} tem tag: {tag}")
+                    channel_id = f"{channel_id}_{tag}"  # Adiciona a tag ao ID do canal
+
                 # Cria o canal se ainda não existir
                 if channel_id not in self.channels:
                     self.channels[channel_id] = Channel(channel_id, unit)
                 
-                # Armazena o mapeamento da coluna
+                
                 channel_map[i] = (channel_id, kind, unit)
                 
             except (ValueError, IndexError) as e:
