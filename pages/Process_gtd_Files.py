@@ -462,7 +462,7 @@ if st.session_state.get("processor_files"):
                     selected_columns = st.multiselect(
                         "Select columns to visualize",
                         options=df.columns.tolist(),
-                        default=df.columns.tolist()[0:5]
+                        default=df.columns.tolist()[0:11]
                     )
                     if selected_columns:
                         st.dataframe(df[selected_columns])
