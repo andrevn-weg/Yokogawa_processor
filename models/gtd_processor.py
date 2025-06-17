@@ -89,14 +89,12 @@ class GTDProcessor:
         unit_parts = lines[unit_line_idx].strip().split('\t')
         kind_parts = lines[kind_line_idx].strip().split('\t')
         print(f"Processando canais: Ch={ch_parts}, Unit={unit_parts}, Kind={kind_parts}")
-        
         # Processa a linha de tag apenas se ela existir
         tag_parts = None
         if tag_line_idx is not None:
             tag_parts = lines[tag_line_idx].strip().split('\t')
-            print(f"Tag: {tag_parts}")
         else:
-            print("Tag: Não encontrada")
+            print("Tag: Linha não encontrada")
         
         # Mapeia canais para suas posições
         # Dicionário: {posição -> (channel_id, kind, unit)}
@@ -121,16 +119,21 @@ class GTDProcessor:
                   # Obtém a unidade e o tipo (Min/Max)
                 unit = unit_parts[i].strip() if i < len(unit_parts) else ""
                 kind = kind_parts[i].strip() if i < len(kind_parts) else ""
-                
                 # Obtém a tag se ela existir
                 tag = ""
                 if tag_parts is not None and i < len(tag_parts):
                     tag = tag_parts[i].strip()
                 
-                # Se existe tag, adiciona ela ao ID do canal
+                # Normaliza a tag removendo caracteres problemáticos para Streamlit Cloud
                 if tag:
-                    print(f"Canal {channel_id} tem tag: {tag}")
-                    channel_id = f"{channel_id}_{tag}"  # Adiciona a tag ao ID do canal
+                    # Remove caracteres especiais e espaços extras
+                    import re
+                    tag = re.sub(r'[^\w\s-]', '', tag)  # Remove caracteres especiais exceto traços
+                    tag = re.sub(r'\s+', '_', tag)      # Substitui espaços por underscore
+                    tag = tag.strip('_')                # Remove underscores no início/fim
+                    
+                    if tag:  # Se ainda tiver conteúdo após a limpeza
+                        channel_id = f"{channel_id}_{tag}"  # Adiciona a tag ao ID do canal
 
                 # Cria o canal se ainda não existir
                 if channel_id not in self.channels:
@@ -199,7 +202,6 @@ class GTDProcessor:
                 
             except ValueError as e:
                 print(f"Erro ao processar linha: {line.strip()} - {e}")
-        
         # Adiciona pares completos de Min/Max aos canais
         samples_added = 0
         for (timestamp, channel_id), values in temp_values.items():
@@ -211,7 +213,6 @@ class GTDProcessor:
                 samples_added += 1
         
         print(f"Adicionadas {samples_added} amostras aos canais.")
-    
     def process_file(self, filepath: str) -> None:
         """
         Processa um único arquivo GTD.
@@ -221,8 +222,21 @@ class GTDProcessor:
         """
         print(f"Processando arquivo: {filepath}")
         
-        with open(filepath, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+        # Tenta diferentes codificações para garantir compatibilidade
+        encodings = ['utf-8', 'utf-8-sig', 'latin1', 'cp1252']
+        lines = None
+        
+        for encoding in encodings:
+            try:
+                with open(filepath, 'r', encoding=encoding) as file:
+                    lines = file.readlines()
+                print(f"Arquivo lido com codificação: {encoding}")
+                break
+            except UnicodeDecodeError:
+                continue
+        
+        if lines is None:
+            raise ValueError(f"Não foi possível ler o arquivo {filepath} com nenhuma codificação suportada")
         
         # Encontra a linha de início dos dados de amostragem
         sampling_data_line_index = self._parse_header(lines)
